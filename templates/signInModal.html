@@ -1,0 +1,120 @@
+<!-- Modal -->
+<div class="modal fade" id="signinModal" tabindex="-1" aria-labelledby="signinModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header justify-content-center">
+                <div class="nav justify-content-center ">
+                    <ul class="nav nav-pills" id="mySignupTab" role="tablist">
+                        <li class="nav-item" id="singinTab">
+                            <a class="nav-link active" id="signinTab" data-toggle="pill" onclick="displaySignin()"
+                                role="tab" aria-selected="true">Sign-In</a>
+                        </li>
+                        <li class="nav-item" id="singupTab">
+                            <a class="nav-link" id="signupTab" data-toggle="pill" onclick="displaySignup()" role="tab"
+                                aria-selected="false">Sign-Up</a>
+                        </li>
+                    </ul>
+                    <hr class="center-diamond">
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+
+
+            <div class="modal-body">
+                <div id="mysigninContent" class="tab-content">
+                    <div class="tab-pane active in tab1" id="signin">
+                        <div>
+                            <div>
+                                <div class="group">
+                                    <input id="signinEmail" required="" class="input" type="text"><span
+                                        class="highlight"></span><span class="bar"></span>
+                                    <label class="label" for="date">Email address</label>
+                                </div>
+
+
+                                <!-- Password input-->
+                                <div class="group">
+                                    <input id="signinPassword" required="" class="input" type="password"><span
+                                        class="highlight"></span><span class="bar"></span>
+                                    <label class="label" for="date">Password</label>
+                                </div>
+                                <em>minimum 6 characters</em>
+
+                                <span class="signin-span" id="notExist">Account does not
+                                    exist</span>
+                                <span class="signin-span" id="requiredSignin">All fields are
+                                    required</span>
+                                <span class="signin-span" id="successfullLogin">Logged In! Close
+                                    this to continue...</span>
+                                <span class="signin-span" id="signininvalidEmail">Please Enter Valid Email</span>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane" id="signup">
+                        <div>
+                            <fieldset>
+                                <!-- Sign Up Form -->
+                                <!-- Text input-->
+                                <div class="group">
+                                    <input id="firstName" required="" class="input" type="text"><span
+                                        class="highlight"></span><span class="bar"></span>
+                                    <label class="label" for="date">First Name</label>
+                                </div>
+
+                                <!-- Text input-->
+                                <div class="group">
+                                    <input id="lastName" required="" class="input" type="text"><span
+                                        class="highlight"></span><span class="bar"></span>
+                                    <label class="label" for="date">Last Name</label>
+                                </div>
+
+                                <!-- Password input-->
+                                <div class="group">
+                                    <input id="email" required="" class="input" type="text"><span
+                                        class="highlight"></span><span class="bar"></span>
+                                    <label class="label" for="date">Email</label>
+                                </div>
+
+                                <!-- Text input-->
+                                <div class="group">
+                                    <input id="password" required="" class="input" type="password"><span
+                                        class="highlight"></span><span class="bar"></span>
+                                    <label class="label" for="date">Password</label>
+                                </div>
+                                <em>1-8 Characters</em>
+
+                                <div class="group">
+                                    <input id="username" required="" class="input" type="text"><span
+                                        class="highlight"></span><span class="bar"></span>
+                                    <label class="label" for="date">Choose User Name</label>
+                                </div>
+                                <span class="signin-span" id="accountExist">Account already
+                                    exists</span>
+                                <span class="signin-span" id="required">All fields are
+                                    required</span>
+                                <span class="signin-span" id="created">Account created please
+                                    login to continue</span>
+                                <span class="signin-span" id="invalidEmail">Please Enter Valid Email</span>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn closeBtnBg" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn buttonBg" id="signinButton" onclick="signin()">Sign In</button>
+                <button type="button" class="btn buttonBg" id="signupButton" onclick="signup()"
+                    style="display: none;">Sign Up</button>
+
+            </div>
+            
+        </div>
+    </div>
+</div>

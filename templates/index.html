@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'headerLinks.html'%}
+
+    <title>Movie Recommendation</title>
+</head>
+
+<body id="body">
+    {% include 'header.html'%}
+
+    <!--Carousel-->
+    {% include 'carouselSection.html'%}
+
+    <!--Signin Section-->
+    {% include 'signInModal.html'%}
+
+    <!--Popular Section-->
+    {% include 'popularSection.html'%}
+
+    {% include 'watchlist.html'%}
+
+    {% include 'recommendedSection.html'%}
+
+    <script>
+
+        $.js = function (el) {
+            return $('[data-js=' + el + ']')
+        };
+        // slider section
+
+        function carousel() {
+            $.js('timeline-carousel').slick({
+                infinite: true,
+                arrows: true,
+                adaptiveHeight: true,
+                arrows: true,
+                prevArrow: '<button class="carousel-control-prev slick-prev" type="button"><span class="fa fa-angle-left" aria-hidden="true" style="font-size:50px;color:black"></span><span class="visually-hidden">Previous</span></button > ',
+                nextArrow: '<button class="carousel-control-next slick-next" type="button"><span class="fa fa-angle-right" aria-hidden="true" style="font-size:50px;color:black"></span><span class="visually-hidden">Next</span></button>',
+                autoplay: false,
+                speed: 1100,
+                slidesToShow: 4,
+                slidesToScroll: 2,
+                responsive: [
+                    {
+                        breakpoint: 1100,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 1
+                        }
+                    },
+                    {
+                        breakpoint: 800,
+                        settings: {
+
+                            slidesToShow: 2,
+                            slidesToScroll: 1
+                        }
+                    }]
+            });
+        }
+        carousel();
+
+        $('.input').blur(function () {
+            var $this = $(this);
+            if ($this.val())
+                $this.addClass('used');
+            else
+                $this.removeClass('used');
+        });
+
+        $('#signinModal').on('hidden.bs.modal', function (e) {
+            $(this)
+                .find("input")
+                .val('')
+                .end();
+
+        })
+
+       
+
+        const signinBtn = document.getElementById("signin");
+        const signinTab = document.getElementById("signinTab");
+        const signupBtn = document.getElementById("signup");
+        const signupTab = document.getElementById("signupTab");
+        const submitSignin = document.getElementById("signinButton");
+        const submitSignup = document.getElementById("signupButton");
+        const alreadyExistText = document.getElementById("accountExist");
+        const requiredText = document.getElementById("required");
+        const createdText = document.getElementById("created");
+        const validEmail = document.getElementById("invalidEmail");
+        const signinrequiredText = document.getElementById("requiredSignin");
+        const signinSuccessText = document.getElementById("successfullLogin");
+        const signinvalidEmail = document.getElementById("signininvalidEmail");
+        const signinNotExistText = document.getElementById("notExist");
+
+        function displaySignin() {
+            signinBtn.classList.toggle("active");
+            signinTab.classList.toggle("active");
+            signupBtn.classList.toggle("active");
+            signupTab.classList.toggle("active");
+            submitSignin.style.display = "block";
+            submitSignup.style.display = "none";
+        }
+        function displaySignup() {
+            signupBtn.classList.toggle("active");
+            signupTab.classList.toggle("active");
+            signinBtn.classList.toggle("active");
+            signinTab.classList.toggle("active");
+            submitSignin.style.display = "none";
+            submitSignup.style.display = "block";
+        }
+    
+
+        
+        function signin() {
+            const emailValue = document.getElementById("signinEmail").value;
+            const pwdValue = document.getElementById("signinPassword").value;
+            var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (emailValue && pwdValue) {
+                signinrequiredText.style.display = "none";
+                signinNotExistText.style.display = "none";
+                signinSuccessText.style.display = "none";
+                if (emailValue.match(mailformat)) {
+                    signinvalidEmail.style.display = "none";
+                    var http = new XMLHttpRequest();
+                    http.open("POST", "{{url_for('getUsers')}}", true);
+                    http.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+                    const body = { "emailValue": emailValue };
+                    http.send(JSON.stringify(body));
+                    http.onload = () => {
+                        if (http.readyState == 4 && http.status == 200) {
+                            const data = JSON.parse(http.response);
+                            if (data) {
+                                signinSuccessText.style.display = "block";
+                                document.getElementById("userNameHeader").innerHTML = data.User_Name;
+                                document.getElementById("userNameHeader").value = data.Email;
+                                document.getElementById("signinheaderButton").disabled = true;
+                                getWatch(data.Email)
+                            } else {
+                                signinNotExistText.style.display = "block";
+                            }
+                        } else {
+                            console.log(`Error: ${http.status}`);
+                        }
+                    };
+                } else {
+                    signinvalidEmail.style.display = "block";
+                }
+            } else {
+                signinrequiredText.style.display = "block";
+            }
+
+        }
+
+        function getWatch(userid) {
+            document.getElementById("watchlistSection").style.display = "none";
+            document.getElementById("recommendedSection").style.display = "none";
+            document.getElementById("watchlistNavbar").style.display = "none";
+            document.getElementById("recommendedNavbar").style.display = "none";
+            var http = new XMLHttpRequest();
+            http.open("POST", "{{url_for('getMovieWatchlist')}}", true);
+            http.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+            const body = { "emailValue": userid };
+            http.send(JSON.stringify(body));
+            http.onload = () => {
+                if (http.readyState == 4 && http.status == 200) {
+                    const data = JSON.parse(http.response);
+                    //const data = http.response;
+                    if (data) {
+                        console.log(data);
+                        displayWatchList(data);
+                        //addonClickWatch(ids);
+                    } else {
+
+                    }
+                } else {
+                    console.log(`Error: ${http.status}`);
+                }
+            };
+
+        }
+
+        function displayWatchList(data) {
+            $('.watchSlick').slick('removeSlide', null, null, true);
+            var mNames = [], i = 0, ids = [];
+            data.forEach(element => {
+                
+                const d = `
+                        <div>
+                        <div class="timeline-carousel__item">
+                                <div class="timeline-carousel__image">
+                                    <div class="media-wrapper media-wrapper--overlay" id="${element.Movie_ID + 'watchlist'} "
+                                        style="background: url(${element.Poster_URL}) center center; background-size:cover;">
+                                        <div class="block-description" >
+                                            <h6 class="iq-title">
+                                                <a tabindex="-1">
+                                                    ${element.Movie_Name}
+                                                </a>
+                                            </h6>
+                                            <div class="movie-time d-flex align-items-center my-2 ">
+                                                <span class="movie-time-text font-normal">${element.Movie_Duration}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+                               
+                                `;
+
+
+                $('.watchSlick').slick('slickAdd', d);
+                console.log(element.Watch_Options)
+                ids[i] = element.Movie_ID + 'watchlist';
+                mNames[i] = element.Movie_Name;
+                i++;
+
+            });
+
+
+            document.getElementById("watchlistNavbar").style.display = "block";
+           
+            document.getElementById("watchlistSection").style.display = "block";
+            $('.recommendedSlick').slick('removeSlide', null, null, true);
+            for (let k = 0; k < i; k++) {
+                let mName = mNames[k]; // do something to get a user id from the page
+                let rec_url = `/getRecommendation/${mName}`
+                fetch(rec_url, { "method": "GET" })
+                    .then(res => res.json())
+                    .then(data => {
+                        displayRecommend(data)
+
+                    })
+
+            }
+            document.getElementById("recommendedSection").style.display = "block";  
+            document.getElementById("recommendedNavbar").style.display = "block";
+
+        }
+
+        function displayRecommend(recData){
+            for(let k = 0;k<5;k++){
+                const d = `
+                        <div>
+                        <div class="timeline-carousel__item">
+                                <div class="timeline-carousel__image">
+                                    <div class="media-wrapper media-wrapper--overlay"
+                                        style="background: url(${recData[1][k]}) center center; background-size:cover;">
+                                        <div class="block-description" >
+                                            <h6 class="iq-title">
+                                                <a tabindex="-1">
+                                                    ${recData[0][k]}
+                                                </a>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+                               
+                                `;
+                $('.recommendedSlick').slick('slickAdd', d);
+
+            }
+        }
+
+
+        function signup() {
+            const emailValue = document.getElementById("email").value;
+            const fnameValue = document.getElementById("firstName").value;
+            const lnameValue = document.getElementById("lastName").value;
+            const pwdValue = document.getElementById("password").value;
+            const unameValue = document.getElementById("username").value;
+            var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (emailValue && fnameValue && lnameValue && pwdValue && unameValue) {
+                requiredText.style.display = "none";
+                alreadyExistText.style.display = "none";
+                createdText.style.display = "none";
+                if (emailValue.match(mailformat)) {
+                    validEmail.style.display = "none";
+                    var http = new XMLHttpRequest();
+                    http.open("PUT", "{{url_for('createUsers')}}", true);
+                    http.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+                    const body = {
+                        "emailValue": emailValue, "fnameValue": fnameValue, "lnameValue": lnameValue, "pwdValue": pwdValue,
+                        "unameValue": unameValue
+                    };
+                    http.send(JSON.stringify(body));
+                    http.responseType = "json";
+                    http.onload = () => {
+                        if (http.readyState == 4 && http.status == 200) {
+                            const data = http.response;
+                            if (data.status === "Account Created") {
+                                createdText.style.display = "block";
+                            } else if (data.status === "Already Exists") {
+                                alreadyExistText.style.display = "block";
+                            }
+                        } else {
+                            console.log(`Error: ${http.status}`);
+                        }
+                    };
+                } else {
+                    validEmail.style.display = "block";
+                }
+
+
+            } else {
+                requiredText.style.display = "block";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

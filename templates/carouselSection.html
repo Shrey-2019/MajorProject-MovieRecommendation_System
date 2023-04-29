@@ -1,0 +1,79 @@
+<div id="carouselExampleAutoplaying" class="carousel slide main-carousel" data-bs-touch="true"
+        data-bs-interval="5000" data-bs-ride="carousel">
+        <div class="carousel-inner tvshows-slider">
+            {% for i in range (carouselData | length) %}
+            {% set classActive = '' %}
+            {% set data = carouselData[i] %}
+            {% if i == 0 %}
+            {% set classActive = 'active' %}
+            {% endif %}
+            <div class="carousel-item {{classActive}} slick-slide slick-bg"
+                style="background: url({{data.Poster_URL}});height: 70vh;">
+
+                <div class="shows-content h-100">
+                    <div class="row align-items-center h-100 movie-details">
+                        <div class="col-lg-7 col-md-12">
+                            <h1 class="slider-text big-title title text-uppercase" data-animation-in="fadeInLeft"
+                                data-delay-in="0.1">{{data.Movie_Name}}</h1>
+                            <div class="slider-ratting d-flex align-items-center" data-animation-in="fadeInLeft">
+
+                                <span class="rating-text">{{data.Movie_rating}}</span>
+                            </div>
+                            <div class="d-flex align-items-center tv-movie-banner text-detail"
+                                data-animation-in="fadeInUp" data-delay-in="0.3">
+                                <span class="badge badge-secondary p-2 mr-3 font-normal">{{data.Sensor_Rating}}</span>
+                                <span class="font-normal">
+                                    {{data.Movie_Duration}}</span>
+                                <span class="trending-year font-normal">{{data.Release_Date}}</span>
+                            </div>
+                            <p data-animation-in="fadeInUp" data-delay-in="0.5" class="m-0">
+                                {{data.Description}}</p>
+
+                            <!-- <div class="d-flex align-items-center r-mb-23 banner-view-btn" data-animation-in="fadeInUp"
+                                data-delay-in="1.3">
+                                <a href="https://wordpress.iqonic.design/product/wp/streamit/movie/euphoria/"
+                                    class="btn btn-hover iq-button" tabindex="0"><i class="fa fa-play mr-2"
+                                        aria-hidden="true"></i>
+                                  Play Now </a>
+                            </div>   -->
+
+                            <div class="dropdown align-items-center r-mb-23 banner-view-btn">
+                                <button type="button" class="btn btn-hover iq-button" data-bs-toggle="dropdown">
+                                    <i class="fa fa-play mr-2" aria-hidden="true"></i>
+                                    Play Now
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for watch in data.Watch_Options %}
+                                    <li><a class="dropdown-item" target="_blank"
+                                            href="{{watch.Link}}">{{watch.Platform}}</a></li>
+
+                                    {% endfor %}
+
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="col-lg-5 col-md-12 trailor-video iq-slider d-none d-lg-block">
+                            <a href="{{data.Movie_Trailer}}" class="video-open playbtn" target="_blank" tabindex="0">
+                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="80px"
+                                    height="80px" viewBox="0 0 213.7 213.7" enable-background="new 0 0 213.7 213.7"
+                                    xml:space="preserve">
+                                    <polygon class="triangle" fill="none" stroke-width="7" stroke-linecap="round"
+                                        stroke-linejoin="round" stroke-miterlimit="10"
+                                        points="73.5,62.5 148.5,105.8 73.5,149.1 "></polygon>
+                                    <circle class="circle" fill="none" stroke-width="7" stroke-linecap="round"
+                                        stroke-linejoin="round" stroke-miterlimit="10" cx="106.8" cy="106.8" r="103.3">
+                                    </circle>
+                                </svg>
+                                <span class="w-trailor">Watch Trailer</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>

@@ -1,0 +1,136 @@
+<!--Popular Section-->
+{% include 'movieDetailModal.html'%}
+
+<div class="popular-section" id="popularSection">
+    <div class="iq-main-header d-flex align-items-center justify-content-between">
+        <h4 class="main-title">Popular Movies</h4>
+    </div>
+    <section class="timeline-carousel">
+
+        <div class="timeline-carousel__item-wrapper" data-js="timeline-carousel">
+
+            {% for data in popularMovies %}
+            <div class="timeline-carousel__item">
+                <div class="timeline-carousel__image">
+                    <div class="media-wrapper media-wrapper--overlay"
+                        style="background: url({{data.Poster_URL}}) center center; background-size:cover;">
+                        <div class="block-description" id="{{data.Movie_ID}}">
+                            <h6 class="iq-title" id="movieTitle">
+                                <a tabindex="-1">
+                                    {{data.Movie_Name}}
+                                </a>
+                            </h6>
+                            <div class="movie-time d-flex align-items-center my-2 " id="moviedur">
+                                <span class="movie-time-text font-normal">{{data.Duration}}</span>
+                            </div>
+
+
+                            <div class="dropdown hover-buttons" id="popularWatchBtn">
+                                <button type="button" class="btn btn-hover iq-button" data-bs-toggle="dropdown" id="moviePlayBtn">
+                                    <i class="fa fa-play mr-2" aria-hidden="true"></i>
+                                    Play Now
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for watch in data.Watch_Options %}
+                                    <li><a class="dropdown-item" target="_blank"
+                                            href="{{watch.Link}}">{{watch.Platform}}</a></li>
+
+                                    {% endfor %}
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    document.getElementById("{{data.Movie_ID}}").addEventListener("click", (e) => {
+                        if (e.target.id === "moviePlayBtn") {
+                            return;
+                        }
+                        console.log(e.target.id)
+                        document.getElementById("MovieDetailLabel").innerHTML = "";
+                        document.getElementById("trailerPreviewModal").innerHTML = "";
+                        document.getElementById("detailsPreviewModal").innerHTML = "";
+                        document.getElementById("watchOptionModal").innerHTML = "";
+
+                        getMovieDetails("MovieDetailLabel", "trailerPreviewModal", "detailsPreviewModal", "watchOptionModal", "{{data.Movie_ID}}");
+                    })
+                </script>
+            </div>
+
+            {% endfor %}
+
+
+
+
+        </div>
+
+    </section>
+</div>
+
+<script>
+
+
+    function getMovieDetails(divTitle, divTrailer, divDetails, watchModal, movie_id) {
+        var http = new XMLHttpRequest();
+        http.open("POST", "{{url_for('getMovieById')}}", true);
+        http.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+        const body = { "movieId": movie_id };
+        http.send(JSON.stringify(body));
+        http.onload = () => {
+            if (http.readyState == 4 && http.status == 200) {
+                const data = http.response;
+                if (data) {
+                    const jsonData = JSON.parse(data);
+                    createElement(jsonData, divTitle, divTrailer, divDetails, watchModal)
+                } else {
+
+                }
+            } else {
+                console.log(`Error: ${http.status}`);
+            }
+        };
+    }
+
+    function createElement(data, divTitle, divTrailer, divDetails, watchModal) {
+        document.getElementById("watchlistBtn").value = data.Movie_ID
+        const div = document.createElement('div');
+        div.innerHTML = `
+                <h5 class="modal-title" id="MovieDetailLabel">${data.Movie_Name}</h5><span id="posterSpan" style="display:none;" >${data.Poster_URL}</span>
+            `;
+        document.getElementById(divTitle).appendChild(div);
+
+        const div2 = document.createElement('div');
+        div2.innerHTML = `<iframe class="embed-responsive-item iframeVideo"  
+                            src="${data.Embed_Trailer}" title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen></iframe> <span id="iframeEmbed" style="display:none;" >${data.Embed_Trailer}</span>`;
+        document.getElementById(divTrailer).appendChild(div2);
+
+        const div3 = document.createElement('div');
+        div3.innerHTML = `<li class="text-[16px] mb-3 text-[#dddddd] font-light"><span id="releaseDate">${data.Release_Date}</span> | <span id="duration">${data.Movie_Duration}</span> | <span id="sensor">${data.Sensor_Rating}</span> | <span id="rating">${data.Movie_rating}</span> 
+                        </li>
+                        <li class="text-[16px] mb-3 text-[#dddddd] font-light castMovie" ><span 
+                                class="text-[18px] font-semibold mr-1 text-[#f4181c] detailSpan">Starring : </span><span id="cast">${data.Movie_Cast}</span>
+                        </li>
+                        <li class="text-[16px] mb-3 text-[#dddddd] font-light castMovie" ><span
+                            class="text-[18px] font-semibold mr-1 text-[#f4181c] detailSpan">Overview : </span><span id="description">${data.Description}</span>
+                    </li>`;
+        document.getElementById(divDetails).appendChild(div3);
+
+        const op = data.Watch_Options;
+        var ele;
+        op.forEach(element => {
+            ele = document.createElement('li');
+            ele.innerHTML = `<a class="dropdown-item" target="_blank" href="${element.Link}">${element.Platform}</a>`;
+            document.getElementById(watchModal).appendChild(ele);
+
+
+        });
+
+
+
+        $("#MovieDetailModal").modal("show");
+    }
+</script>

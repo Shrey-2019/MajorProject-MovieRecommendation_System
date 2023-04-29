@@ -1,0 +1,78 @@
+<div class="modal fade movieDetailModal" id="MovieDetailModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header" id="MovieDetailLabel">
+
+            </div>
+
+            <div class="modal-body">
+                <div>
+                    <div class="embed-responsive embed-responsive-1by1" id="trailerPreviewModal">
+
+                    </div>
+                </div>
+                <div>
+                    <ul class="movieDetailList" id="detailsPreviewModal">
+
+                    </ul>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="dropdown">
+                    <button type="button" class="btn buttonBg" data-bs-toggle="dropdown" aria-hidden="true">Watch
+                        Options</button>
+                    <ul class="dropdown-menu" id="watchOptionModal">
+
+                    </ul>
+                </div>
+
+                <button id="watchlistBtn" type="button" class="btn buttonBg">Add to Watchlist</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const watchBtn = document.getElementById("watchlistBtn");
+    watchBtn.addEventListener("click", () => {
+        var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        const movieId = document.getElementById("watchlistBtn").value;
+        const WatchId = movieId + " " + time;
+        const desc = document.getElementById("description").innerText;
+        const embTrailer = document.getElementById("iframeEmbed").innerText;
+        const cast = document.getElementById("cast").innerText;
+        const dur = document.getElementById("duration").innerText;
+        const name = document.getElementById("MovieDetailLabel").innerText;
+        const rating = document.getElementById("rating").innerText;
+        const poster = document.getElementById("posterSpan").innerText;
+        const date = document.getElementById("releaseDate").innerText;
+        const sensor = document.getElementById("sensor").innerText;
+        const userid = document.getElementById("userNameHeader").value;
+        var http = new XMLHttpRequest();
+        http.open("PUT", "{{url_for('addMovie')}}", true);
+        http.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        const body = { "WatchId": WatchId, "desc": desc, "embTrailer": embTrailer, "cast": cast, "dur": dur, "movieId": movieId, "name": name, "rating": rating, "poster": poster, "date": date, "sensor": sensor, "email": userid };
+        http.send(JSON.stringify(body));
+        http.onload = () => {
+            if (http.readyState == 4 && http.status == 200) {
+                const data = http.response;
+                console.log(data)
+                var last = watchBtn.innerText;
+                watchBtn.innerText = 'Added to Watchlist';
+                setTimeout(function () {
+                    watchBtn.innerText = last;
+                }.bind(watchBtn), 2000);
+                getWatch(document.getElementById("userNameHeader").value)
+            } else {
+                console.log(`Error: ${http.status}`);
+            }
+        };
+    })
+</script>
